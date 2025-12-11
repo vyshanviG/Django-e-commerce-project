@@ -1,0 +1,28 @@
+.navbar-brand {
+    letter-spacing: 1px;
+}
+
+.nav-link {
+    font-size: 17px;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+.nav-link:hover {
+    color: #00eaff !important;
+}
+
+.dropdown-menu a:hover {
+    background: #f0f0f0;
+}
+
+.category-btn .category-card {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.category-btn:hover .category-card {
+    background-color: purple;
+    color: white;
+    /* text color when hovered */
+    cursor: pointer;
+}

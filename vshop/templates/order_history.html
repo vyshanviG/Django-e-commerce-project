@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% block title %}Order History{% endblock %} 
+{% block content %}
+{% load static %}
+<h2>Your Orders</h2>
+{% if orders %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Order #</th>
+      <th>Total</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td>{{ order.id }}</td>
+      <td>${{ order.total_amount }}</td>
+      <td>{{ order.created_at }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>You have no orders yet.</p>
+{% endif %}
+
+<a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; text-align: center; padding: 50px; }
+        .container { width: 400px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { background: #28a745; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
+        button:hover { background: #218838; }
+        .cancel { background: #dc3545; margin-top: 10px; }
+        .cancel:hover { background: #c82333; }
+        .progress-container { display: none; margin-top: 20px; }
+        .progress-bar { width: 0%; height: 20px; background: #28a745; border-radius: 10px; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Payment Gateway Simulation</h2>
+        <p>Order ID: {{ order.id }}</p>
+        <p>Amount: ₹{{ order.total_amount }}</p>
+
+        <form id="payment-form">
+            <input type="hidden" id="transaction_id" value="{{ transaction.transaction_id }}">
+            <input type="text" placeholder="Card Number" required>
+            <input type="number" placeholder="Expiry Month" min="1" max="12" required>
+            <input type="number" placeholder="Expiry Year" min="2025" max="2035" required>
+            <input type="number" placeholder="CVV" required>
+
+            <button type="submit">Pay Now</button>
+            <button type="button" class="cancel" id="fail-btn">Fail Payment</button>
+        </form>
+
+        <div class="progress-container" id="progress-container">
+            <p>Processing Payment...</p>
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('payment-form');
+        const failBtn = document.getElementById('fail-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        function simulatePayment(success=true) {
+            form.style.display = 'none';
+            progressContainer.style.display = 'block';
+            let width = 0;
+
+            const interval = setInterval(() => {
+                width += 10;
+                progressBar.style.width = width + '%';
+
+                if (width >= 100) {
+                    clearInterval(interval);
+                    // Redirect after "processing"
+                    if (success) {
+                        window.location.href = "{% url 'order_success' order.id %}";
+                    } else {
+                        alert('Payment Failed! Please try again.');
+                        window.location.reload();
+                    }
+                }
+            }, 300); // 300ms per increment → ~3 seconds
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            simulatePayment(true);  // Simulate success
+        });
+
+        failBtn.addEventListener('click', () => {
+            simulatePayment(false); // Simulate failure
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="cart-page">
+
+    <!-- Header -->
+    <div class="cart-header">
+        <h2><i class="fa-solid fa-bag-shopping"></i> Your Cart</h2>
+        <p class="sub-text">Review your items & proceed to checkout</p>
+    </div>
+
+    {% if cart.cart_items.all %}
+    <!-- Cart Items -->
+    <div class="cart-items">
+        {% for item in cart.cart_items.all %}
+        <div class="cart-item-card">
+
+            <!-- Product Image -->
+            <div class="item-img">
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}">
+                {% else %}
+                <div style="width:90px;height:90px;background:#f3f3f3;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#777;font-size/;12px;">
+                  No image
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Details -->
+            <div class="item-info">
+                <h4>{{ item.product.title }}</h4>
+                <p class="price">${{ item.product.price|floatformat:2 }}</p>
+
+                <!-- Quantity Controller -->
+                <div class="qty-control">
+                    <form method="POST" action="{% url 'update_cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="decrement" value="{{ item.id }}">
+                        <button class="qty-btn"><i class="fa-solid fa-minus"></i></button>
+                    </form>
+
+                    <span class="qty-number">{{ item.quantity }}</span>
+
+                    <form method="POST" action="{% url 'update_cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="increment" value="{{ item.id }}">
+                        <button class="qty-btn"><i class="fa-solid fa-plus"></i></button>
+                    </form>
+                </div>
+
+                <p class="subtotal">Subtotal: <strong>${{ item.subtotal|floatformat:2 }}</strong></p>
+            </div>
+
+            <!-- Remove -->
+            <div class="item-remove">
+                <form method="POST" action="{% url 'update_cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="remove" value="{{ item.id }}">
+                    <button class="remove-btn">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Checkout Sticky Box -->
+    <div class="checkout-box">
+        <h3>Total: ${{ total|floatformat:2 }}</h3>
+        <a href="{% url 'proceed_to_checkout' %}" class="btn btn-success">Proceed to Checkout</a> 
+    </div>
+
+    {% else %}
+
+    <!-- Empty Cart UI -->
+    <div class="empty-cart">
+        <i class="fa-solid fa-cart-shopping empty-icon"></i>
+        <h3>Your cart is empty</h3>
+        <p>Add items to begin shopping!</p>
+        <a href="{% url 'product_list' %}" class="shop-btn">Shop Now</a>
+    </div>
+
+    {% endif %}
+</div>
+
+<style>
+/* Whole page */
+.cart-page {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Header */
+.cart-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.cart-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+}
+.sub-text {
+    color: #777;
+}
+
+/* Cart Item Card */
+.cart-item-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: all .2s;
+}
+.cart-item-card:hover {
+    transform: scale(1.02);
+}
+
+/* Image */
+.item-img img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Info */
+.item-info {
+    flex: 1;
+    padding: 0 15px;
+}
+.item-info h4 {
+    margin: 0;
+    font-size: 18px;
+}
+.price {
+    color: #6c5ce7;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Quantity Controller */
+.qty-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+}
+.qty-btn {
+    border: none;
+    background: #eee;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.qty-btn:hover {
+    background: #ddd;
+}
+.qty-number {
+    font-size: 16px;
+    font-weight: bold;
+}
+.subtotal {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Remove Button */
+.item-remove .remove-btn {
+    border: none;
+    background: #ff6b6b;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.remove-btn:hover {
+    background: #ff3b3b;
+}
+
+/* Checkout Box */
+.checkout-box {
+    position: sticky;
+    bottom: 20px;
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.checkout-btn {
+    background: #6c5ce7;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+}
+.checkout-btn:hover {
+    background: #5544d4;
+}
+
+/* Empty Cart */
+.empty-cart {
+    text-align: center;
+    padding: 50px 0;
+}
+.empty-icon {
+    font-size: 70px;
+    color: #bbb;
+}
+.shop-btn {
+    margin-top: 15px;
+    display: inline-block;
+    padding: 10px 20px;
+    background: #6c5ce7;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-4">
+    <h2>{{ product.title }}</h2>
+    
+        {% if product.image %}
+        <img src="{{ product.image.url }}" style="width:300px" alt="{{ product.title }}">
+        {% endif %}
+
+        <p><strong>Price:</strong> ₹{{ product.price }}</p>
+        <p>{{ product.description }}</p>
+
+        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+    
+</div>
+    
+
+{% endblock %}

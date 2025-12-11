@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<div class="payment-container">
+
+    <div class="payment-card">
+
+        <h2><i class="fa-solid fa-credit-card"></i> Checkout Payment</h2>
+        <p>Order ID: <strong>{{ order.id }}</strong></p>
+        <p>Total Amount: <strong>${{ order.total_amount|floatformat:2 }}</strong></p>
+
+        <div class="payment-methods">
+            <h4>Select Payment Method</h4>
+            <div class="methods">
+                <button class="method visa"><i class="fa-brands fa-cc-visa"></i> Visa</button>
+                <button class="method mastercard"><i class="fa-brands fa-cc-mastercard"></i> Mastercard</button>
+                <button class="method paypal"><i class="fa-brands fa-cc-paypal"></i> PayPal</button>
+            </div>
+        </div>
+
+        <form method="POST" action="{% url 'payment_process' %}" class="payment-form">
+            {% csrf_token %}
+            <input type="hidden" name="transaction_id" value="TESTPAY-{{ order.id }}">
+            
+            <label>Card Number</label>
+            <input type="text" placeholder="1234 5678 9012 3456" required>
+            
+            <div class="flex-row">
+                <div>
+                    <label>Expiry</label>
+                    <input type="text" placeholder="MM/YY" required>
+                </div>
+                <div>
+                    <label>CVC</label>
+                    <input type="text" placeholder="123" required>
+                </div>
+            </div>
+
+            <button type="submit" class="pay-btn">Pay ${{ order.total_amount|floatformat:2 }} <i class="fa-solid fa-lock"></i></button>
+        </form>
+
+        <p class="mock-note">This is a mock payment. No real transaction occurs.</p>
+    </div>
+
+</div>
+
+<style>
+    .payment-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 20px;
+    min-height: 80vh;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    font-family: 'Poppins', sans-serif;
+}
+
+.payment-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    width: 420px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-card h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 700;
+}
+
+.payment-card p {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.payment-methods {
+    margin: 20px 0;
+}
+
+.payment-methods .methods button {
+    padding: 12px 20px;
+    margin: 5px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+.method.visa { background: #1a1f71; }
+.method.mastercard { background: #eb001b; }
+.method.paypal { background: #003087; }
+
+.method:hover, .method.active {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+.payment-form input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    transition: border 0.3s ease;
+}
+
+.payment-form input:focus {
+    border-color: #28a745;
+    outline: none;
+}
+
+.flex-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.pay-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pay-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+}
+
+.mock-note {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #888;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .payment-card {
+        width: 90%;
+        padding: 30px;
+    }
+}
+</style>
+
+{% endblock %}

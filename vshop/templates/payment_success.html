@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Payment Success{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <h2>🎉 Payment Successful!</h2>
+    <p>Thank you {{ user.username }}. Your order has been placed successfully.</p>
+    <a href="/" class="btn btn-home">Continue Shopping</a>
+    <a href="/order-history/" class="btn btn-orders">View Orders</a>
+</div>
+<style>
+    .success-container {
+    text-align: center;
+    padding: 80px 20px;
+    background: #fff3f8;
+    border-radius: 15px;
+    max-width: 600px;
+    margin: 40px auto;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.success-container h2 {
+    color: #ff3f6c;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.success-container p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.success-container .btn-home,
+.success-container .btn-orders {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin: 0 10px;
+    font-weight: 500;
+    transition: 0.3s;
+    color: #fff;
+}
+
+.btn-home {
+    background: #ff3f6c;
+}
+
+.btn-home:hover {
+    background: #e0365b;
+}
+
+.btn-orders {
+    background: #333;
+}
+
+.btn-orders:hover {
+    background: #555;
+}
+</style>
+{% endblock %}
