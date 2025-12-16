@@ -9,6 +9,8 @@ from .models import Order, Product, Category, Transaction
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 import random
+from .tasks import process_payment
+
 
 
 
@@ -213,34 +215,49 @@ def order_success(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'order_success.html', {'order': order})
 
-@login_required(login_url='login')
+@login_required
 def proceed_to_checkout(request):
-    cart_id = request.session.get('cart_id')
-
-    if not cart_id:
-        return redirect('cart_detail')
-
-    cart = Cart.objects.filter(id=cart_id).first()
+    cart = Cart.objects.filter(user=request.user).first()
 
     if not cart or cart.cart_items.count() == 0:
         return redirect('cart_detail')
 
-    total_amount = cart.total
+    order = Order.objects.create(
+        user=request.user,
+        cart=cart,
+        total_amount=cart.total,
+        status='pending'
+    )
 
-    # Show payment page (DO NOT create order here)
-    return render(request, 'payment.html', {
-        'cart': cart,
-        'total_amount': total_amount,
-    })
+    return redirect('payment_page', order_id=order.id)
     
-@login_required(login_url='login')
-def payment_page(request):
-    cart_id = request.session.get('cart_id')
+@login_required
+def payment_page(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, 'payment.html', {'order': order})
 
-    if not cart_id:
-        return redirect('cart_detail')
+@login_required
+def start_payment(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
 
-    cart = Cart.objects.get(id=cart_id)
+    transaction = Transaction.objects.create(
+        order=order,
+        amount=order.total_amount,
+        status='pending'
+    )
 
-    return render(request, 'payment.html', {'cart': cart})
+    from .tasks import process_payment
+    process_payment.delay(transaction.id)
+
+    return redirect('payment_processing', transaction_id=transaction.id)
+
+@login_required
+def payment_processing(request, transaction_id):
+    transaction = get_object_or_404(Transaction, id=transaction_id)
+    return render(request, 'payment_processing.html', {'transaction': transaction})
+
+@login_required
+def payment_status(request, transaction_id):
+    transaction = get_object_or_404(Transaction, id=transaction_id)
+    return JsonResponse({'status': transaction.status})
 

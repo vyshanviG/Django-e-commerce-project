@@ -81,6 +81,5 @@ class Transaction(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     
-    def _str_(self):
+    def str(self):
         return f"{self.transaction_id} - {self.status}"
-    

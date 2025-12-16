@@ -25,9 +25,7 @@ SECRET_KEY = 'django-insecure-dx0$ao3fj#rf74i-6!n551-8$j9r&btva@wk6t(ik+bp+=w9av
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'vshop.onrender.com'
-]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -144,4 +142,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis server
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Optional: store results
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'  # Change to your timezone

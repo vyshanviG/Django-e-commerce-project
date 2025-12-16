@@ -1,0 +1,13 @@
+<h3>Processing payment...</h3>
+
+<script>
+setInterval(() => {
+  fetch("{% url 'payment_status' transaction.id %}")
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        window.location.href = "{% url 'order_success' transaction.order.id %}";
+      }
+    });
+}, 2000);
+</script>
